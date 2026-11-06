@@ -1,0 +1,635 @@
+
+<%
+    const user = currentUser || locals.currentUser || null;
+
+    const isLoggedIn =
+        typeof isAuthenticated !== "undefined"
+            ? isAuthenticated
+            : Boolean(user);
+
+    const ownerId = listing.owner
+        ? String(listing.owner._id || listing.owner)
+        : "";
+
+    const userId = user ? String(user._id) : "";
+
+    const isPropertyOwner = Boolean(
+        user && ownerId && ownerId === userId
+    );
+
+    const imageUrl =
+        typeof listing.image === "string"
+            ? listing.image
+            : (listing.image && listing.image.url) || "";
+
+    const price = Number(listing.price) || 0;
+
+    const reviews = listing.reviews || [];
+%>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= listing.title %> - Airbnb</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f7f7f7;
+            color: #222;
+        }
+
+        nav {
+            background: white;
+            padding: 18px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .logo {
+            color: #ff385c;
+            font-size: 25px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: #333;
+            text-decoration: none;
+            margin-left: 15px;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .property-card,
+        .booking-section,
+        .reviews-section {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+        }
+
+        .property-image {
+            width: 100%;
+            height: 420px;
+            object-fit: cover;
+            background: #e5e5e5;
+        }
+
+        .property-content {
+            padding: 30px;
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 30px;
+        }
+
+        .location {
+            color: #777;
+            margin-bottom: 20px;
+        }
+
+        .description {
+            line-height: 1.7;
+            color: #555;
+        }
+
+        .price {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 20px 0;
+            align-items: center;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .edit-btn {
+            background: #222;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+        }
+
+        .back-btn {
+            background: #666;
+        }
+
+        .booking-section,
+        .reviews-section {
+            margin-top: 25px;
+            padding: 30px;
+        }
+
+        .booking-section h2,
+        .reviews-section h2 {
+            margin-top: 0;
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 7px;
+            font-weight: bold;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 15px;
+        }
+
+        .book-btn {
+            background: #ff385c;
+            width: 100%;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+
+        .book-btn:hover {
+            background: #e31c5f;
+        }
+
+        .total {
+            margin-top: 20px;
+            font-size: 19px;
+            font-weight: bold;
+        }
+
+        .login-message {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .login-message a {
+            color: #ff385c;
+        }
+
+        .owner-message {
+            padding: 18px;
+            background: #fff4f5;
+            border-radius: 8px;
+            color: #555;
+            text-align: center;
+        }
+
+        .review-card {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+        }
+
+        .review-card:last-child {
+            border-bottom: none;
+        }
+
+        .review-rating {
+            color: #e6a700;
+            font-weight: bold;
+        }
+
+        .review-comment {
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .review-btn {
+            background: #222;
+            margin-top: 10px;
+        }
+
+        .delete-review-btn {
+            background: #dc3545;
+            border: none;
+            padding: 8px 12px;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 600px) {
+            .property-image {
+                height: 260px;
+            }
+
+            .property-content {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            nav {
+                padding: 15px;
+            }
+
+            .booking-section,
+            .reviews-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <a href="/" class="logo">airbnb</a>
+
+        <div>
+            <a href="/">Home</a>
+            <a href="/listings">Explore Stays</a>
+
+            <% if (isLoggedIn && user) { %>
+                <a href="/my-bookings">My Bookings</a>
+                <a href="/profile">Profile</a>
+                <a href="/listings/new">Add Property</a>
+                <a href="/logout">Logout</a>
+            <% } else { %>
+                <a href="/login">Login</a>
+                <a href="/signup">Sign Up</a>
+            <% } %>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <!-- PROPERTY DETAILS -->
+
+        <div class="property-card">
+
+            <img
+                src="<%= imageUrl %>"
+                alt="<%= listing.title %>"
+                class="property-image"
+            >
+
+            <div class="property-content">
+
+                <h1><%= listing.title %></h1>
+
+                <p class="location">
+                    <%= listing.location %>, <%= listing.country %>
+                </p>
+
+                <p class="description">
+                    <%= listing.description %>
+                </p>
+
+                <p class="price">
+                    ₹<%= price.toLocaleString("en-IN") %> / night
+                </p>
+
+                <div class="actions">
+
+                    <a href="/listings" class="btn back-btn">
+                        Back to Properties
+                    </a>
+
+                    <% if (isPropertyOwner) { %>
+
+                        <a
+                            href="/listings/<%= listing._id %>/edit"
+                            class="btn edit-btn"
+                        >
+                            Edit Property
+                        </a>
+
+                        <form
+                            action="/listings/<%= listing._id %>/delete"
+                            method="POST"
+                            onsubmit="return confirm('Are you sure you want to delete this property?');"
+                        >
+                            <button type="submit" class="btn delete-btn">
+                                Delete Property
+                            </button>
+                        </form>
+
+                    <% } %>
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- BOOKING SECTION -->
+
+        <div class="booking-section">
+
+            <h2>Book This Property</h2>
+
+            <% if (isLoggedIn && user) { %>
+
+                <% if (isPropertyOwner) { %>
+
+                    <div class="owner-message">
+                        You cannot book your own property.
+                    </div>
+
+                <% } else { %>
+
+                    <form
+                        action="/listings/<%= listing._id %>/book"
+                        method="POST"
+                        id="bookingForm"
+                        data-price="<%= price %>"
+                    >
+
+                        <label for="checkIn">Check-in Date</label>
+
+                        <input
+                            type="date"
+                            id="checkIn"
+                            name="checkIn"
+                            required
+                        >
+
+                        <label for="checkOut">Check-out Date</label>
+
+                        <input
+                            type="date"
+                            id="checkOut"
+                            name="checkOut"
+                            required
+                        >
+
+                        <label for="guests">Number of Guests</label>
+
+                        <input
+                            type="number"
+                            id="guests"
+                            name="guests"
+                            min="1"
+                            max="20"
+                            value="1"
+                            step="1"
+                            required
+                        >
+
+                        <p class="total">
+                            Total Price: ₹<span id="totalPrice">0</span>
+                        </p>
+
+                        <button type="submit" class="btn book-btn">
+                            Book Now
+                        </button>
+
+                    </form>
+
+                <% } %>
+
+            <% } else { %>
+
+                <div class="login-message">
+                    <p>Please login to book this property.</p>
+                    <a href="/login">Login Here</a>
+                </div>
+
+            <% } %>
+
+        </div>
+
+        <!-- REVIEWS SECTION -->
+
+        <div class="reviews-section">
+
+            <h2>Guest Reviews</h2>
+
+            <% if (averageRating) { %>
+                <p class="review-rating">
+                    ⭐ <%= averageRating %> / 5
+                    (<%= reviews.length %> reviews)
+                </p>
+            <% } else { %>
+                <p>No reviews yet. Be the first to review this property!</p>
+            <% } %>
+
+            <% if (user) { %>
+
+                <a
+                    href="/listings/<%= listing._id %>/reviews/new"
+                    class="btn review-btn"
+                >
+                    Write a Review
+                </a>
+
+            <% } else { %>
+
+                <p>
+                    <a href="/login">Login</a> to write a review.
+                </p>
+
+            <% } %>
+
+            <% reviews.forEach((review) => { %>
+
+                <div class="review-card">
+
+                    <p>
+                        <strong>
+                            <%= review.author ? review.author.username : "Guest" %>
+                        </strong>
+                    </p>
+
+                    <p class="review-rating">
+                        ⭐ <%= review.rating %> / 5
+                    </p>
+
+                    <p class="review-comment">
+                        <%= review.comment %>
+                    </p>
+
+                    <% if (
+                        user &&
+                        review.author &&
+                        String(review.author._id) === String(user._id)
+                    ) { %>
+
+                        <form
+                            action="/listings/<%= listing._id %>/reviews/<%= review._id %>/delete"
+                            method="POST"
+                            onsubmit="return confirm('Delete this review?');"
+                        >
+                            <button
+                                type="submit"
+                                class="delete-review-btn"
+                            >
+                                Delete Review
+                            </button>
+                        </form>
+
+                    <% } %>
+
+                </div>
+
+            <% }); %>
+
+        </div>
+
+    </div>
+
+    <!-- BOOKING PRICE CALCULATOR -->
+
+    <script>
+        const checkInInput = document.getElementById("checkIn");
+        const checkOutInput = document.getElementById("checkOut");
+        const totalPriceElement = document.getElementById("totalPrice");
+        const bookingForm = document.getElementById("bookingForm");
+
+        const pricePerNight = bookingForm
+            ? Number(bookingForm.dataset.price) || 0
+            : 0;
+
+        function parseLocalDate(value) {
+            return new Date(value + "T00:00:00");
+        }
+
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day = String(date.getDate()).padStart(2, "0");
+
+            return `${year}-${month}-${day}`;
+        }
+
+        function calculatePrice() {
+
+            if (!checkInInput || !checkOutInput || !totalPriceElement) {
+                return;
+            }
+
+            if (checkInInput.value && checkOutInput.value) {
+
+                const checkIn = parseLocalDate(checkInInput.value);
+                const checkOut = parseLocalDate(checkOutInput.value);
+
+                if (checkOut > checkIn) {
+
+                    const nights = Math.round(
+                        (checkOut - checkIn) / (1000 * 60 * 60 * 24)
+                    );
+
+                    const total = nights * pricePerNight;
+
+                    totalPriceElement.textContent =
+                        total.toLocaleString("en-IN");
+
+                    return;
+                }
+            }
+
+            totalPriceElement.textContent = "0";
+        }
+
+        if (checkInInput && checkOutInput) {
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            checkInInput.min = formatDate(today);
+            checkOutInput.min = formatDate(today);
+
+            checkInInput.addEventListener("change", function () {
+
+                if (checkInInput.value) {
+
+                    const nextDate = parseLocalDate(checkInInput.value);
+
+                    nextDate.setDate(nextDate.getDate() + 1);
+
+                    checkOutInput.min = formatDate(nextDate);
+
+                    if (
+                        checkOutInput.value &&
+                        parseLocalDate(checkOutInput.value) <=
+                        parseLocalDate(checkInInput.value)
+                    ) {
+                        checkOutInput.value = "";
+                    }
+                }
+
+                calculatePrice();
+            });
+
+            checkOutInput.addEventListener("change", calculatePrice);
+        }
+
+        if (bookingForm) {
+
+            bookingForm.addEventListener("submit", function (event) {
+
+                const checkIn = checkInInput.value;
+                const checkOut = checkOutInput.value;
+
+                const guests = Number(
+                    document.getElementById("guests").value
+                );
+
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                let valid = false;
+
+                if (checkIn && checkOut) {
+
+                    const start = parseLocalDate(checkIn);
+                    const end = parseLocalDate(checkOut);
+
+                    valid =
+                        start >= today &&
+                        end > start &&
+                        Number.isInteger(guests) &&
+                        guests >= 1 &&
+                        guests <= 20;
+                }
+
+                if (!valid) {
+                    event.preventDefault();
+
+                    alert(
+                        "Please select valid dates and enter a valid number of guests."
+                    );
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>

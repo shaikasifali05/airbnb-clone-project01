@@ -1,0 +1,282 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Airbnb - Find Your Perfect Stay</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            color: #222;
+            background: #fff;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 6%;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 30px;
+            color: #ff385c;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .nav-links a:hover {
+            color: #ff385c;
+        }
+
+        .signup {
+            background: #ff385c;
+            color: white !important;
+            padding: 11px 18px;
+            border-radius: 25px;
+        }
+
+        .hero {
+            min-height: 570px;
+            background:
+                linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)),
+                url("https://images.unsplash.com/photo-1600585154340-be6161a56a0c")
+                center/cover no-repeat;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .hero-content {
+            color: white;
+            max-width: 750px;
+        }
+
+        .hero h1 {
+            font-size: 55px;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 20px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .explore-btn {
+            display: inline-block;
+            background: #ff385c;
+            color: white;
+            padding: 16px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 17px;
+            font-weight: bold;
+        }
+
+        .explore-btn:hover {
+            background: #e31c5f;
+        }
+
+        .features {
+            padding: 65px 7%;
+            text-align: center;
+        }
+
+        .features h2 {
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+
+        .features > p {
+            color: #777;
+            margin-bottom: 40px;
+        }
+
+        .feature-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        .feature-card {
+            padding: 30px 20px;
+            background: #fafafa;
+            border-radius: 12px;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 12px;
+            color: #ff385c;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        footer {
+            background: #222;
+            color: white;
+            text-align: center;
+            padding: 25px;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .hero p {
+                font-size: 17px;
+            }
+
+            .feature-container {
+                grid-template-columns: 1fr;
+            }
+
+            nav {
+                flex-direction: column;
+            }
+
+            .nav-links {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <nav>
+
+        <a href="/" class="logo">airbnb</a>
+
+        <div class="nav-links">
+
+            <a href="/">Home</a>
+
+            <a href="/listings">Explore Stays</a>
+
+            <% if (typeof currentUser !== "undefined" && currentUser) { %>
+
+                <a href="/my-bookings">My Bookings</a>
+
+                <a href="/profile">Profile</a>
+
+                <a href="/listings/new">Add Property</a>
+
+                <a href="/logout">Logout</a>
+
+            <% } else { %>
+
+                <a href="/login">Login</a>
+
+                <a href="/signup" class="signup">Sign Up</a>
+
+            <% } %>
+
+        </div>
+
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <h1>Find Your Perfect Stay</h1>
+
+            <p>
+                Discover beautiful homes, comfortable stays,
+                and amazing destinations around the world.
+                Your next adventure starts here!
+            </p>
+
+            <a href="/listings" class="explore-btn">
+                Explore Properties
+            </a>
+
+        </div>
+
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+
+        <h2>Why Choose Airbnb?</h2>
+
+        <p>Everything you need for a comfortable and memorable stay.</p>
+
+        <div class="feature-container">
+
+            <div class="feature-card">
+                <h3>Beautiful Properties</h3>
+                <p>
+                    Explore amazing homes and unique places
+                    for your next trip.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <h3>Easy Booking</h3>
+                <p>
+                    Find your favorite property and book
+                    your stay with a simple process.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <h3>Comfortable Stays</h3>
+                <p>
+                    Discover comfortable spaces that make
+                    every journey special.
+                </p>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- Footer -->
+    <footer>
+
+        <p>© 2026 Airbnb Clone. All rights reserved.</p>
+
+        <p>Made with ❤️ for learning Full Stack Web Development.</p>
+
+    </footer>
+
+</body>
+</html>

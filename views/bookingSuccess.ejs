@@ -1,0 +1,298 @@
+
+<%
+    const bookingCheckIn = booking.checkIn;
+    const bookingCheckOut = booking.checkOut;
+    const bookingGuests = booking.guests;
+    const bookingTotal = booking.totalPrice;
+
+    const nights = Math.ceil(
+        (new Date(bookingCheckOut) - new Date(bookingCheckIn)) /
+        (1000 * 60 * 60 * 24)
+    );
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Booking Confirmed - Airbnb</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f7f7f7;
+            color: #222;
+        }
+
+        nav {
+            background: white;
+            padding: 18px 6%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .logo {
+            color: #ff385c;
+            font-size: 28px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .container {
+            max-width: 650px;
+            margin: 45px auto;
+            padding: 20px;
+        }
+
+        .success-card {
+            background: white;
+            padding: 35px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+        }
+
+        .success-icon {
+            width: 75px;
+            height: 75px;
+            margin: auto;
+            border-radius: 50%;
+            background: #e7f7ed;
+            color: #218838;
+            font-size: 42px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        h1 {
+            margin-top: 20px;
+            color: #218838;
+        }
+
+        .subtitle {
+            color: #666;
+        }
+
+        .reference {
+            margin: 25px 0;
+            padding: 15px;
+            background: #fff0f3;
+            border: 1px dashed #ff385c;
+            border-radius: 10px;
+        }
+
+        .reference p {
+            margin: 5px;
+            color: #666;
+        }
+
+        .reference h3 {
+            margin: 8px 0;
+            color: #ff385c;
+            letter-spacing: 1px;
+            overflow-wrap: anywhere;
+        }
+
+        .details {
+            margin-top: 25px;
+            text-align: left;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 13px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .detail-row span:first-child {
+            color: #777;
+        }
+
+        .price {
+            font-size: 23px;
+            font-weight: bold;
+            color: #ff385c;
+        }
+
+        .status {
+            display: inline-block;
+            background: #e7f7ed;
+            color: #218838;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .buttons {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 13px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .primary {
+            background: #ff385c;
+            color: white;
+        }
+
+        .secondary {
+            background: #eee;
+            color: #333;
+        }
+
+        @media (max-width: 500px) {
+            .success-card {
+                padding: 22px;
+            }
+
+            .detail-row {
+                font-size: 14px;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+
+            nav, .buttons {
+                display: none;
+            }
+
+            .container {
+                margin: 0 auto;
+            }
+
+            .success-card {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <a href="/" class="logo">airbnb</a>
+    </nav>
+
+    <div class="container">
+
+        <div class="success-card">
+
+            <div class="success-icon">✓</div>
+
+            <h1>Booking Confirmed!</h1>
+
+            <p class="subtitle">
+                Your reservation has been successfully saved.
+            </p>
+
+            <div class="reference">
+                <p>Your Booking Reference Number</p>
+
+                <h3>
+                    AIRBNB-<%= booking._id.toString().slice(-8).toUpperCase() %>
+                </h3>
+
+                <p>Keep this number for your records.</p>
+            </div>
+
+            <h2><%= listing.title %></h2>
+
+            <p>
+                <%= listing.location %>, <%= listing.country || "" %>
+            </p>
+
+            <div class="details">
+
+                <div class="detail-row">
+                    <span>Check-in</span>
+                    <strong>
+                        <%= new Date(bookingCheckIn).toLocaleDateString("en-IN") %>
+                    </strong>
+                </div>
+
+                <div class="detail-row">
+                    <span>Check-out</span>
+                    <strong>
+                        <%= new Date(bookingCheckOut).toLocaleDateString("en-IN") %>
+                    </strong>
+                </div>
+
+                <div class="detail-row">
+                    <span>Guests</span>
+                    <strong><%= bookingGuests %></strong>
+                </div>
+
+                <div class="detail-row">
+                    <span>Number of Nights</span>
+                    <strong><%= nights %></strong>
+                </div>
+
+                <div class="detail-row">
+                    <span>Total Amount</span>
+                    <strong class="price">
+                        ₹<%= Number(bookingTotal).toLocaleString("en-IN") %>
+                    </strong>
+                </div>
+
+                <div class="detail-row">
+                    <span>Booking Status</span>
+                    <span class="status">
+                        <%= booking.status %>
+                    </span>
+                </div>
+
+                <div class="detail-row">
+                    <span>Booking Date</span>
+                    <strong>
+                        <%= booking.createdAt
+                            ? new Date(booking.createdAt).toLocaleDateString("en-IN")
+                            : "Unavailable" %>
+                    </strong>
+                </div>
+
+            </div>
+
+            <div class="buttons">
+
+                <a href="/my-bookings" class="btn primary">
+                    View My Bookings
+                </a>
+
+                <a href="/listings" class="btn secondary">
+                    Explore More
+                </a>
+
+                <a href="#" onclick="window.print(); return false;" class="btn secondary">
+                    Print Receipt
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

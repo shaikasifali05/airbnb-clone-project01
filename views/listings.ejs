@@ -1,0 +1,314 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Explore Properties - Airbnb</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f7f7f7;
+            color: #222;
+        }
+
+        nav {
+            background: white;
+            padding: 18px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .logo {
+            color: #ff385c;
+            font-size: 28px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .nav-links a:hover {
+            color: #ff385c;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #777;
+            margin-bottom: 25px;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            max-width: 550px;
+        }
+
+        .search-form input {
+            flex: 1;
+            padding: 13px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        .search-form button {
+            background: #ff385c;
+            color: white;
+            border: none;
+            padding: 13px 22px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .search-form button:hover {
+            background: #e31c5f;
+        }
+
+        .listings-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        .listing-card {
+            background: white;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+            transition: transform 0.2s;
+        }
+
+        .listing-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .listing-card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+        }
+
+        .card-content {
+            padding: 18px;
+        }
+
+        .card-content h2 {
+            font-size: 20px;
+            margin: 0 0 10px;
+        }
+
+        .location {
+            color: #777;
+            font-size: 14px;
+        }
+
+        .description {
+            color: #555;
+            line-height: 1.5;
+            min-height: 42px;
+        }
+
+        .price {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .view-btn {
+            display: block;
+            background: #ff385c;
+            color: white;
+            text-align: center;
+            padding: 12px;
+            text-decoration: none;
+            border-radius: 7px;
+            font-weight: bold;
+        }
+
+        .view-btn:hover {
+            background: #e31c5f;
+        }
+
+        .empty {
+            background: white;
+            padding: 35px;
+            text-align: center;
+            border-radius: 12px;
+        }
+
+        @media (max-width: 900px) {
+            .listings-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .listings-grid {
+                grid-template-columns: 1fr;
+            }
+
+            nav {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .search-form {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav>
+
+        <a href="/" class="logo">airbnb</a>
+
+        <div class="nav-links">
+
+            <a href="/">Home</a>
+
+            <a href="/listings">Explore Stays</a>
+
+            <% if (typeof currentUser !== "undefined" && currentUser) { %>
+
+                <a href="/my-bookings">My Bookings</a>
+
+                <a href="/profile">Profile</a>
+
+                <a href="/listings/new">Add Property</a>
+
+                <a href="/logout">Logout</a>
+
+            <% } else { %>
+
+                <a href="/login">Login</a>
+
+                <a href="/signup">Sign Up</a>
+
+            <% } %>
+
+        </div>
+
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+
+        <h1>Explore Amazing Properties</h1>
+
+        <p class="subtitle">
+            Discover beautiful places for your next trip.
+        </p>
+
+        <!-- Search -->
+        <form action="/listings" method="GET" class="search-form">
+
+            <input
+                type="text"
+                name="location"
+                placeholder="Search by city or location"
+                value="<%= location || '' %>"
+            >
+
+            <button type="submit">Search</button>
+
+        </form>
+
+        <!-- Property Cards -->
+        <% if (listings.length === 0) { %>
+
+            <div class="empty">
+                <h2>No properties found</h2>
+                <p>Try searching for another location.</p>
+                <a href="/listings">View All Properties</a>
+            </div>
+
+        <% } else { %>
+
+            <div class="listings-grid">
+
+                <% listings.forEach(listing => { %>
+
+                    <div class="listing-card">
+
+                        <img
+                            src="<%= listing.image %>"
+                            alt="<%= listing.title %>"
+                        >
+
+                        <div class="card-content">
+
+                            <h2><%= listing.title %></h2>
+
+                            <p class="location">
+                                <%= listing.location %>,
+                                <%= listing.country %>
+                            </p>
+
+                            <p class="description">
+                                <%= listing.description %>
+                            </p>
+
+                            <p class="price">
+                                ₹<%= listing.price %> / night
+                            </p>
+
+                            <a
+                                href="/listings/<%= listing._id %>"
+                                class="view-btn"
+                            >
+                                View Details
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                <% }); %>
+
+            </div>
+
+        <% } %>
+
+    </div>
+
+</body>
+</html>

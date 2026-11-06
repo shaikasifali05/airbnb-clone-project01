@@ -1,0 +1,283 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Bookings - Airbnb</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f7f7f7;
+            color: #222;
+        }
+
+        nav {
+            background: white;
+            padding: 18px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .logo {
+            color: #ff385c;
+            font-size: 28px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .booking-card {
+            display: flex;
+            background: white;
+            border-radius: 14px;
+            overflow: hidden;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .booking-card img {
+            width: 300px;
+            min-height: 280px;
+            object-fit: cover;
+        }
+
+        .booking-info {
+            padding: 25px;
+            flex: 1;
+        }
+
+        .booking-info p {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .total {
+            color: #ff385c !important;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .confirmed {
+            background: #e7f7ed;
+            color: #218838;
+        }
+
+        .cancelled {
+            background: #fde8e8;
+            color: #c62828;
+        }
+
+        .booking-date {
+            background: #fff0f3;
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .cancel-btn {
+            margin-top: 15px;
+            padding: 11px 18px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+
+        .empty {
+            background: white;
+            padding: 45px 20px;
+            text-align: center;
+            border-radius: 14px;
+        }
+
+        .explore-btn {
+            display: inline-block;
+            background: #ff385c;
+            color: white;
+            padding: 13px 22px;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 650px) {
+            .booking-card {
+                flex-direction: column;
+            }
+
+            .booking-card img {
+                width: 100%;
+                height: 220px;
+            }
+
+            nav {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <a href="/" class="logo">airbnb</a>
+
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/listings">Explore Stays</a>
+            <a href="/my-bookings">My Bookings</a>
+            <a href="/profile">Profile</a>
+            <a href="/listings/new">Add Property</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <h1>My Bookings</h1>
+        <p>Manage and view all your reservations.</p>
+
+        <% if (bookings.length === 0) { %>
+
+            <div class="empty">
+                <h2>No bookings yet!</h2>
+                <p>You haven't booked any properties.</p>
+
+                <a href="/listings" class="explore-btn">
+                    Explore Properties
+                </a>
+            </div>
+
+        <% } else { %>
+
+            <% bookings.forEach(booking => { %>
+
+                <div class="booking-card">
+
+                    <img
+                        src="<%= booking.listing.image %>"
+                        alt="<%= booking.listing.title %>"
+                    >
+
+                    <div class="booking-info">
+
+                        <h2><%= booking.listing.title %></h2>
+
+                        <p>
+                            <strong>Location:</strong>
+                            <%= booking.listing.location %>,
+                            <%= booking.listing.country %>
+                        </p>
+
+                        <p>
+                            <strong>Check-in:</strong>
+                            <%= new Date(booking.checkIn).toLocaleDateString("en-IN") %>
+                        </p>
+
+                        <p>
+                            <strong>Check-out:</strong>
+                            <%= new Date(booking.checkOut).toLocaleDateString("en-IN") %>
+                        </p>
+
+                        <p>
+                            <strong>Guests:</strong>
+                            <%= booking.guests %>
+                        </p>
+
+                        <p class="total">
+                            Total Price: ₹<%= booking.totalPrice %>
+                        </p>
+
+                        <p class="booking-date">
+                            <strong>Booking Created:</strong>
+                            <%= booking.createdAt
+                                ? new Date(booking.createdAt).toLocaleString("en-IN")
+                                : "Date unavailable" %>
+                        </p>
+
+                        <% if (booking.status === "Cancelled") { %>
+
+                            <p>
+                                <strong>Status:</strong>
+                                <span class="status cancelled">
+                                    Cancelled
+                                </span>
+                            </p>
+
+                            <p>Your booking has been cancelled.</p>
+
+                        <% } else { %>
+
+                            <p>
+                                <strong>Status:</strong>
+                                <span class="status confirmed">
+                                    Confirmed
+                                </span>
+                            </p>
+
+                            <form
+                                action="/bookings/<%= booking._id %>/cancel"
+                                method="POST"
+                                onsubmit="return confirm('Are you sure you want to cancel this booking?');"
+                            >
+                                <button type="submit" class="cancel-btn">
+                                    Cancel Booking
+                                </button>
+                            </form>
+
+                        <% } %>
+
+                    </div>
+
+                </div>
+
+            <% }); %>
+
+        <% } %>
+
+        <a href="/listings" class="explore-btn">
+            Back to Properties
+        </a>
+
+    </div>
+
+</body>
+</html>
